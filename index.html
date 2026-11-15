@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bougie</title>
+<meta name="theme-color" content="#b8643a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root{
+    --bg:#f6f1ea; --card:#fffdf9; --ink:#2b2420; --muted:#7a6d63;
+    --accent:#b8643a; --accent-soft:#f3e2d6; --line:#e7ddd2; --warn:#9a3d1e; --warn-bg:#fbe9e1;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1d1916; --card:#27221e; --ink:#f1e9e1; --muted:#b3a597; --accent:#e08a5c;
+      --accent-soft:#3a2b22; --line:#3a332d; --warn:#f0a284; --warn-bg:#3b2219; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Roboto,sans-serif}
+  .wrap{max-width:720px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top)) 16px calc(60px + env(safe-area-inset-bottom))}
+  h1{font-family:Georgia,"Noto Serif",serif;font-weight:600;font-size:30px;line-height:1.15;margin:8px 0 6px}
+  .sub{color:var(--muted);margin:0 0 22px}
+  h2{font-family:Georgia,"Noto Serif",serif;font-weight:500;font-size:22px;margin:0 0 12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+  label{display:block;font-size:14px;font-weight:500;margin-bottom:6px}
+  .hint{font-size:13px;color:var(--muted);margin-top:4px}
+  input,select{width:100%;font:inherit;font-size:17px;padding:11px 12px;border:1px solid var(--line);
+    border-radius:10px;background:var(--bg);color:var(--ink)}
+  input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:480px){.grid{grid-template-columns:1fr}}
+  .results{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+  @media (max-width:480px){.results{grid-template-columns:1fr 1fr}}
+  .stat{background:var(--accent-soft);border-radius:12px;padding:12px}
+  .stat .k{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .stat .v{font-family:Georgia,"Noto Serif",serif;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+  .stat .u{font-size:14px;color:var(--muted);margin-left:2px}
+  .wick{margin-top:14px;padding:14px;border-radius:12px;border:1px dashed var(--accent)}
+  .wick strong{color:var(--accent)}
+  .warn{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  ol,ul{padding-left:20px;margin:0}
+  li{margin-bottom:8px}
+  .temps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  @media (max-width:480px){.temps{grid-template-columns:1fr}}
+  .temp{border-radius:12px;padding:12px;background:var(--bg);border:1px solid var(--line)}
+  .temp .v{font-family:Georgia,"Noto Serif",serif;font-size:24px;font-weight:600;color:var(--accent)}
+  .temp .k{font-size:14px}
+  svg{display:block;margin:6px auto 0}
+  .foot{font-size:13px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Bougie de soja en pot céramique</h1>
+  <p class="sub">Calcule les quantités et les mèches pour ton pot, et retrouve les étapes et les températures.</p>
+
+  <div class="card">
+    <h2>Calculateur</h2>
+    <div class="grid">
+      <div>
+        <label for="d">Diamètre intérieur du pot (cm)</label>
+        <input id="d" type="number" inputmode="decimal" step="0.5" min="3" value="16">
+      </div>
+      <div>
+        <label for="w">Poids d'eau du pot (g)</label>
+        <input id="w" type="number" inputmode="decimal" step="10" min="10" value="500">
+        <div class="hint">Remplis d'eau jusqu'à 1 cm sous le bord, puis pèse.</div>
+      </div>
+      <div>
+        <label for="p">Parfum (%)</label>
+        <input id="p" type="number" inputmode="decimal" step="0.5" min="0" max="12" value="8">
+        <div class="hint">Généralement 6 à 10 %. Ne dépasse pas le maximum indiqué pour ta cire.</div>
+      </div>
+      <div>
+        <label for="n">Nombre de pots identiques</label>
+        <input id="n" type="number" inputmode="numeric" step="1" min="1" value="1">
+      </div>
+      <div>
+        <label for="m">Nombre de mèches</label>
+        <select id="m">
+          <option value="auto">Automatique selon le diamètre</option>
+          <option value="1">1</option><option value="2">2</option>
+          <option value="3">3</option><option value="4" selected>4</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="stat"><div class="k">Cire</div><div class="v" id="rWax">–</div></div>
+      <div class="stat"><div class="k">Parfum</div><div class="v" id="rFo">–</div></div>
+      <div class="stat"><div class="k">Total</div><div class="v" id="rTot">–</div></div>
+    </div>
+
+    <div class="wick" id="wickBox"></div>
+    <div id="warnBox"></div>
+  </div>
+
+  <div class="card">
+    <h2>Températures</h2>
+    <div class="temps">
+      <div class="temp"><div class="v">80–85 °C</div><div class="k">Faire fondre (jamais plus de 90 °C)</div></div>
+      <div class="temp"><div class="v">≈ 80–85 °C</div><div class="k">Ajouter le parfum, mélanger 2 min</div></div>
+      <div class="temp"><div class="v">55–60 °C</div><div class="k">Couler</div></div>
+    </div>
+    <p class="foot">Laisse refroidir dans une pièce à 20–22 °C, sans courant d'air. Si la fiche technique de ta cire indique d'autres températures, suis la fiche.</p>
+  </div>
+
+  <div class="card">
+    <h2>Étapes</h2>
+    <ol>
+      <li><b>Prépare les pots.</b> Ils doivent être propres, secs, émaillés à l'intérieur et sans fissure. Réchauffe-les légèrement (sèche-cheveux ou four à 50 °C) pour une bonne adhérence aux parois.</li>
+      <li><b>Colle les mèches</b> au fond avec des pastilles adhésives, aux positions indiquées par le calculateur. Tiens-les droites avec un centreur.</li>
+      <li><b>Fais fondre la cire</b> au bain-marie jusqu'à 80–85 °C, en vérifiant au thermomètre.</li>
+      <li><b>Retire du feu et ajoute le parfum.</b> Mélange doucement pendant 2 minutes.</li>
+      <li><b>Laisse redescendre à 55–60 °C</b>, puis coule lentement, en une seule fois.</li>
+      <li><b>Laisse refroidir 24 h</b> sans bouger le pot.</li>
+      <li><b>Coupe les mèches</b> à 5–6 mm.</li>
+      <li><b>Laisse maturer 1 à 2 semaines</b> avant d'allumer, pour que le parfum se développe.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Test de combustion</h2>
+    <ul>
+      <li>Allume la bougie pendant 3 à 4 h : la cire doit fondre jusqu'aux bords.</li>
+      <li>Les flammes doivent faire 1 à 2,5 cm, sans fumée noire.</li>
+      <li><b>Flammes trop hautes, suie ou pot brûlant :</b> prends une taille de mèche en dessous.</li>
+      <li><b>La cire ne fond pas jusqu'aux bords</b> (la bougie se creuse) : prends une taille au-dessus.</li>
+      <li>Note la taille qui fonctionne pour chaque pot, pour ne plus avoir à refaire le test.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Repères mèches ECO</h2>
+    <table>
+      <thead><tr><th>Diamètre</th><th>1 mèche</th><th>4 mèches</th></tr></thead>
+      <tbody>
+        <tr><td class="num">5–6 cm</td><td>ECO 2</td><td>—</td></tr>
+        <tr><td class="num">6–7 cm</td><td>ECO 4–6</td><td>—</td></tr>
+        <tr><td class="num">7–8 cm</td><td>ECO 8</td><td>—</td></tr>
+        <tr><td class="num">12–13 cm</td><td>—</td><td>ECO 1–2</td></tr>
+        <tr><td class="num">13–15 cm</td><td>—</td><td>ECO 2–4</td></tr>
+        <tr><td class="num">15–17 cm</td><td>—</td><td>ECO 4–6</td></tr>
+        <tr><td class="num">17–20 cm</td><td>—</td><td>ECO 6–8</td></tr>
+      </tbody>
+    </table>
+    <p class="foot">Ces tailles sont des points de départ : elles varient selon la marque de mèche, la cire et le parfum. Fais toujours un test de combustion.</p>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = x => (Math.round(x) ).toLocaleString('fr-BE');
+function autoCount(D){ return D < 8 ? 1 : D < 11 ? 2 : D < 14 ? 3 : 4; }
+const factor = {1:1, 2:1.6, 3:2.0, 4:2.4};
+function ecoFor(zone){
+  const t = [[5.5,1],[6.2,2],[6.8,4],[7.3,6],[8,8],[8.7,10],[9.5,12],[Infinity,14]];
+  for (const [max, n] of t) if (zone < max) return n;
+}
+function prev(n){ const s=[1,2,4,6,8,10,12,14]; const i=s.indexOf(n); return i>0 ? s[i-1] : null; }
+
+function layoutSvg(D, n){
+  const S=150, r=S/2-6, c=S/2;
+  let dots=[];
+  if(n===1) dots=[[0,0]];
+  else {
+    const off = n===4 ? Math.PI/4 : -Math.PI/2;
+    const rr = (n===2 ? 0.5 : n===3 ? 0.55 : 0.5) * r; // position relative au rayon
+    for(let i=0;i<n;i++){ const a=off+i*2*Math.PI/n; dots.push([Math.cos(a)*rr, Math.sin(a)*rr]); }
+  }
+  const acc = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+  const line = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();
+  return `<svg width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" role="img" aria-label="Position des mèches">
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${line}" stroke-width="2"/>
+    ${dots.map(([x,y])=>`<circle cx="${c+x}" cy="${c+y}" r="6" fill="${acc}"/>`).join('')}
+  </svg>`;
+}
+
+function calc(){
+  const D = parseFloat($('d').value), W = parseFloat($('w').value),
+        P = parseFloat($('p').value) || 0, N = Math.max(1, parseInt($('n').value) || 1);
+  const warns = [];
+  if (W > 0){
+    const total = W * 0.86 * N, wax = total / (1 + P/100), fo = wax * P/100;
+    $('rWax').innerHTML = fmt(wax) + '<span class="u">g</span>';
+    $('rFo').innerHTML  = fmt(fo)  + '<span class="u">g</span>';
+    $('rTot').innerHTML = fmt(total) + '<span class="u">g</span>';
+  } else { ['rWax','rFo','rTot'].forEach(i => $(i).textContent = '–'); }
+  if (P > 12) warns.push('Plus de 12 % de parfum : la cire risque de suinter et de mal brûler. Vérifie le maximum indiqué pour ta cire.');
+
+  if (D > 0){
+    const sel = $('m').value, rec = autoCount(D), n = sel === 'auto' ? rec : parseInt(sel);
+    const eco = ecoFor(D / factor[n]), lower = prev(eco);
+    let place;
+    if (n === 1) place = 'au centre';
+    else {
+      const fromEdge = n === 2 ? D/4 : n === 3 ? D*0.225 : D/4;
+      place = `à environ <strong>${fromEdge.toFixed(1).replace('.',',')} cm du bord</strong>, réparties régulièrement`;
+    }
+    $('wickBox').innerHTML =
+      `<div><strong>${n} mèche${n>1?'s':''} ECO ${eco}</strong>${lower ? ` (teste aussi l'ECO ${lower})` : ''}</div>
+       <div class="hint">Place ${n>1?'les mèches':'la mèche'} ${place}.</div>${layoutSvg(D, n)}`;
+    if (n > rec) warns.push(`Pour ${String(D).replace('.',',')} cm, ${n} mèches risquent de trop chauffer (flammes hautes, suie, pot brûlant). Mieux vaut en mettre ${rec}.`);
+    if (n < rec) warns.push(`Avec seulement ${n} mèche${n>1?'s':''} sur ${String(D).replace('.',',')} cm, la cire risque de ne pas fondre jusqu'aux bords. ${rec} mèches sont conseillées.`);
+    if (D > 20) warns.push('Au-delà de 20 cm, les repères sont moins fiables : fais un test de combustion attentif.');
+  } else $('wickBox').innerHTML = '';
+
+  $('warnBox').innerHTML = warns.map(w => `<div class="warn">${w}</div>`).join('');
+}
+const KEY='bougie-v1';
+try{ const saved=JSON.parse(localStorage.getItem(KEY)||'{}'); for(const k in saved) if($(k)) $(k).value=saved[k]; }catch(e){}
+function save(){ try{ const o={}; ['d','w','p','n','m'].forEach(id=>o[id]=$(id).value); localStorage.setItem(KEY,JSON.stringify(o)); }catch(e){} }
+['d','w','p','n','m'].forEach(id => $(id).addEventListener('input', ()=>{calc();save();}));
+calc();
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>
